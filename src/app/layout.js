@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,19 +21,21 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body
-        suppressHydrationWarning={true}
-        className={`${geistSans.variable} ${geistMono.variable} antialiased relative min-h-screen bg-slate-950`}
-      >
-        {/* Background Grid */}
-        <div className="pointer-events-none absolute inset-0 z-[-1] bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          suppressHydrationWarning={true}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased relative min-h-screen bg-slate-950`}
+        >
+          {/* Background Grid */}
+          <div className="pointer-events-none absolute inset-0 z-[-1] bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
-        {/* Main Content */}
-        <Navbar />
-        <div className="min-h-[89vh]">{children}</div>
-        <Footer />
-      </body>
-    </html>
+          {/* Main Content */}
+          <Navbar />
+          <div className="min-h-[89vh]">{children}</div>
+          <Footer />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
