@@ -32,15 +32,15 @@ const BlogList = () => {
           </TabsList>
         </Tabs>
       </div>
-      <div className="w-full px-6 md:px-16 lg:px-24 xl:px-32 grid md:grid-cols-4 gap-5">
-        {blog_data.map((item,index) => {
-          console.log(item);
-          
+      <div className="w-full mt-4 px-6 md:px-16 lg:px-24 xl:px-32 grid md:grid-cols-4 gap-5">
+        {blog_data.map((item, index) => {
+          // console.log(item);
           return (
             <BlogCard
-            key={index}
+              key={index}
               image={item.image}
               title={item.title}
+              id={item.id}
               description={item.description}
               category={item.category}
             />
