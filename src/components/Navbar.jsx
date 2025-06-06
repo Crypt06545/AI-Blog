@@ -1,23 +1,24 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react"; 
+import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
-import { User } from 'lucide-react';
-import { usePathname } from 'next/navigation';
-import { useClerk } from "@clerk/nextjs";
+import { User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useClerk, UserButton, useUser } from "@clerk/nextjs";
 
 const Navbar = () => {
+  const { openSignIn } = useClerk();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const {openSignIn} = useClerk()
+  const { user } = useUser();
 
   // Navigation links data
   const navLinks = [
-    { path: '/', name: 'Home' },
-    { path: '/about', name: 'About' },
-    { path: '/blog', name: 'Blog' },
-    { path: '/contact', name: 'Contact' }
+    { path: "/", name: "Home" },
+    { path: "/about", name: "About" },
+    { path: "/blog", name: "Blog" },
+    { path: "/contact", name: "Contact" },
   ];
 
   // Function to check if link is active
@@ -40,9 +41,13 @@ const Navbar = () => {
       <ul className="md:flex hidden items-center gap-10">
         {navLinks.map((link) => (
           <li key={link.path}>
-            <Link 
-              href={link.path} 
-              className={`transition ${isActive(link.path) ? 'text-blue-400 font-medium' : 'hover:text-blue-400'}`}
+            <Link
+              href={link.path}
+              className={`transition ${
+                isActive(link.path)
+                  ? "text-blue-400 font-medium"
+                  : "hover:text-blue-400"
+              }`}
             >
               {link.name}
             </Link>
@@ -51,14 +56,20 @@ const Navbar = () => {
       </ul>
 
       {/* Desktop Account Button */}
-      <Button
-        onClick={openSignIn}
-        variant="outline"
-        className="hidden cursor-pointer md:flex items-center gap-2 bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:text-white transition-colors"
-      >
-        <User className="h-5 w-5" />
-        Account
-      </Button>
+      {user ? (
+        <div>
+          <UserButton />
+        </div>
+      ) : (
+        <Button
+          onClick={(e) => openSignIn()}
+          variant="outline"
+          className="hidden cursor-pointer md:flex items-center gap-2 bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:text-white transition-colors"
+        >
+          <User className="h-5 w-5" />
+          Account
+        </Button>
+      )}
 
       {/* Mobile Menu Button */}
       <button
@@ -80,9 +91,13 @@ const Navbar = () => {
           <ul className="flex flex-col space-y-4 text-lg">
             {navLinks.map((link) => (
               <li key={link.path}>
-                <Link 
-                  href={link.path} 
-                  className={`transition ${isActive(link.path) ? 'text-blue-400 font-medium' : 'hover:text-blue-400'}`}
+                <Link
+                  href={link.path}
+                  className={`transition ${
+                    isActive(link.path)
+                      ? "text-blue-400 font-medium"
+                      : "hover:text-blue-400"
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.name}
