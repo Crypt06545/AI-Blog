@@ -1,3 +1,4 @@
+import BlogCard from "@/components/BlogCard";
 import BlogList from "@/components/BlogList";
 import Hero from "@/components/Hero";
 

@@ -1,37 +1,51 @@
-import { AppWindowIcon, CodeIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { blog_data } from "@/app/assets/assets";
+import BlogCard from "./BlogCard";
 const BlogList = () => {
   const blogCategory = [
-    { path: "/", name: "Home" },
-    { path: "/about", name: "About" },
-    { path: "/blog", name: "Blog" },
-    { path: "/contact", name: "Contact" },
+    { path: "account", name: "All" },
+    { path: "password", name: "Tech" },
+    { path: "startup", name: "Startup" },
+    { path: "lifestyle", name: "Life" },
+    { path: "finance", name: "Finance" },
   ];
 
   return (
-    <div className="min-h-[89vh] bg-gray-900">
-      <div className="flex justify-center items-center">
-        <Tabs className='p-4' defaultValue="account">
-          <TabsList className="bg-gray-800 border border-gray-700 rounded-full flex justify-center gap-2 p-1">
-            <TabsTrigger className='text-white cursor-pointer ' value="account">All</TabsTrigger>
-            <TabsTrigger className='text-white cursor-pointer' value="password">Technology</TabsTrigger>
-            <TabsTrigger className='text-white cursor-pointer' value="startup">Startup</TabsTrigger>
-            <TabsTrigger className='text-white cursor-pointer' value="lifestyle">Lifestyle</TabsTrigger>
-            <TabsTrigger className='text-white cursor-pointer' value="finance">Finance</TabsTrigger>
+    <div className="min-h-[89vh] w-[] bg-gray-900">
+      <div className="flex justify-center items-center p-2 sm:p-4">
+        <Tabs defaultValue="account" className="w-full overflow-x-auto">
+          <TabsList className="bg-gray-800 border border-gray-700 rounded-full flex gap-1 p-1 w-max mx-auto">
+            {blogCategory.map((category) => (
+              <TabsTrigger
+                key={category.path}
+                value={category.path}
+                className="text-white cursor-pointer px-3 py-1 text-sm sm:text-base sm:px-4 sm:py-2"
+              >
+                <span className="hidden sm:inline">{category.name}</span>
+                <span className="sm:hidden">
+                  {category.name.length > 4
+                    ? category.name.substring(0, 7)
+                    : category.name}
+                </span>
+              </TabsTrigger>
+            ))}
           </TabsList>
         </Tabs>
+      </div>
+      <div className="w-full px-6 md:px-16 lg:px-24 xl:px-32 grid md:grid-cols-4 gap-5">
+        {blog_data.map((item,index) => {
+          console.log(item);
+          
+          return (
+            <BlogCard
+            key={index}
+              image={item.image}
+              title={item.title}
+              description={item.description}
+              category={item.category}
+            />
+          );
+        })}
       </div>
     </div>
   );
