@@ -1,14 +1,19 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
+import React from "react";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/Sidebar";
 
-export const metadata = {
-  title: "Dashboard - My App",
-  description: "Your personalized dashboard area.",
-};
-
-export default function DashboardLayout({ children }) {
+const DashboardLayout = ({ children }) => {
   return (
-    <div className="flex h-screen bg-gray-100">
-      <SidebarProvider>{children}</SidebarProvider>
+    <div className="bg-white">
+      <SidebarProvider>
+        <AppSidebar />
+        <main>
+          <SidebarTrigger />
+          {children}
+        </main>
+      </SidebarProvider>
     </div>
   );
-}
+};
+
+export default DashboardLayout;
