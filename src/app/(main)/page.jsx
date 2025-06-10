@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="">
       <Hero />
-      <BlogList/>
+      <BlogList />
     </div>
   );
 }

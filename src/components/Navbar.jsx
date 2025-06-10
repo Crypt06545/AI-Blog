@@ -1,13 +1,14 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { User, Menu, X, LayoutDashboard } from "lucide-react";
 import { Button } from "./ui/button";
-import { User } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useClerk, UserButton, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
   const { openSignIn } = useClerk();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
@@ -27,9 +28,7 @@ const Navbar = () => {
   };
 
   return (
-   <nav className="h-[55px] sticky top-0 w-full px-6 md:px-16 lg:px-24 xl:px-28 flex items-center justify-between z-50 bg-gray-900/40 backdrop-blur-sm backdrop-saturate-150 text-white shadow-[0px_4px_25px_0px_#0000000D] transition-all duration-300">
-
-
+    <nav className="h-[55px] sticky top-0 w-full px-6 md:px-16 lg:px-24 xl:px-28 flex items-center justify-between z-50 bg-gray-900/40 backdrop-blur-sm backdrop-saturate-150 text-white shadow-[0px_4px_25px_0px_#0000000D] transition-all duration-300">
       {/* Logo */}
       <Link href="/">
         <img
@@ -59,9 +58,19 @@ const Navbar = () => {
 
       {/* Desktop Account Button */}
       {user ? (
-        <div>
-          <UserButton />
-        </div>
+        <>
+          <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Action
+                label="Dashboard"
+                labelIcon={<LayoutDashboard className="h-4 w-4" />}
+                onClick={() => {
+                  router.push("/dashboard");
+                }}
+              />
+            </UserButton.MenuItems>
+          </UserButton>
+        </>
       ) : (
         <Button
           onClick={(e) => openSignIn()}
