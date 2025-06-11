@@ -1,8 +1,8 @@
 "use client";
-
 import React, { useEffect, useRef } from "react";
 import "quill/dist/quill.snow.css";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const AddBlogPage = () => {
   const editorRef = useRef(null);
@@ -23,12 +23,12 @@ const AddBlogPage = () => {
       <p className="mt-4 text-zinc-900 font-semibold">Blog Description</p>
       <div className="max-w-lg h-72 pb-16 sm:pb-10 pt-2 relative border border-zinc-300 rounded-md focus-within:ring-2 focus-within:ring-blue-300">
         <div ref={editorRef} className="h-full" />
-        <button
+        <Button
           type="button"
           className="absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-4 py-1.5 rounded hover:underline cursor-pointer"
         >
           Generate with AI
-        </button>
+        </Button>
       </div>
     </div>
   );
