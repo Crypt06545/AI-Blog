@@ -24,7 +24,7 @@ const items = [
   },
   {
     title: "Inbox",
-    url: "/dashboard/inbox",
+    url: "/dashboard/addblog",
     icon: Inbox,
   },
   {
@@ -39,7 +39,7 @@ const items = [
   },
   {
     title: "Settings",
-    url: "/dashboard/settings", 
+    url: "/dashboard/settings",
     icon: Settings,
   },
 ];
@@ -49,7 +49,6 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-     
       <SidebarContent className={"bg-white"}>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -65,7 +64,11 @@ export function AppSidebar() {
                         href={item.url}
                         className={`
                           flex items-center gap-3 w-full p-2 rounded-md
-                          ${isActive ? "bg-blue-600 text-white" : "text-gray-700 hover:bg-gray-100"}
+                          ${
+                            isActive
+                              ? "bg-blue-600 text-white"
+                              : "text-gray-700 hover:bg-gray-100"
+                          }
                           transition-colors duration-200 ease-in-out
                         `}
                       >
