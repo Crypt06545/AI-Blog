@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-
 export const blogsApi = createApi({
   reducerPath: "blogsApi",
   baseQuery: fetchBaseQuery({
@@ -19,7 +18,19 @@ export const blogsApi = createApi({
         body: formdata,
       }),
     }),
+    //generate ai content
+    genAiContetn: builder.mutation({
+      query: (prompt) => ({
+        url: "generate-content",
+        method: "POST",
+        body: { prompt },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    }),
   }),
 });
 
-export const { useGetBlogsQuery,useAddBlogMutation } = blogsApi;
+export const { useGetBlogsQuery, useAddBlogMutation, useGenAiContetnMutation } =
+  blogsApi;

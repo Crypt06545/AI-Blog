@@ -5,69 +5,94 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { useAddBlogMutation } from "@/app/redux/api";
+import { useAddBlogMutation, useGenAiContetnMutation } from "@/app/redux/api";
+import LoaderSpinner from "@/components/LoaderSpinner";
 
 const AddBlogPage = () => {
-  const [addBlog, { isLoading, isError, isSuccess, data, error }] =
-    useAddBlogMutation();
-
-  // console.log(isLoading,isError,isSuccess,data,error);
+  const [addBlog, { isLoading }] = useAddBlogMutation();
+  const [genAiContent, { isLoading: isGenLoading }] = useGenAiContetnMutation();
   const editorRef = useRef(null);
-  const quilref = useRef(null);
-
+  const quilRef = useRef(null);
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [category, setCategory] = useState("startup");
-  // generateContent
 
   const generateContent = async () => {
-    // Placeholder for AI content generation
-    const defaultText = "Generated blog content...";
-    quilref.current?.clipboard.dangerouslyPasteHTML(defaultText);
+    if (!title) return toast.error("Please Enter a title!");
+
+    try {
+      const res = await genAiContent(title).unwrap();
+      if (res?.success && res?.content) {
+        if (quilRef.current) {
+          quilRef.current.root.innerHTML = res.content;
+        }
+        toast.success("AI content generated!");
+      } else {
+        toast.error("Failed to generate content.");
+      }
+    } catch (error) {
+      toast.error(error?.data?.error || error.message || "Failed to generate.");
+      console.error("AI Error:", error);
+    }
   };
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    const description = quilref.current?.root.innerHTML;
+    if (!quilRef.current) return;
 
+    const description = quilRef.current.root.innerHTML;
     const formData = new FormData();
     formData.append("title", title);
     formData.append("subTitle", subTitle);
     formData.append("category", category);
     formData.append("description", description);
-    formData.append("image", image);
+    if (image) formData.append("image", image);
     formData.append("author", "mehadi");
     formData.append("authorImg", "mehadi");
 
     try {
-      const result = await fetch("/api/addblog", {
-        method: "POST",
-        body: formData,
-      });
+      const result = await addBlog(formData).unwrap();
 
-      const data = await result.json();
-
-      if (data.success) {
+      if (result.success) {
         toast.success("Blog created successfully!");
-      } else {
-        toast.error(data.error || "Failed to create blog.");
+        // Reset form
+        setTitle("");
+        setSubTitle("");
+        setImage(false);
+        setCategory("startup");
+        if (quilRef.current) {
+          quilRef.current.root.innerHTML = "";
+        }
       }
     } catch (error) {
-      toast.error(error.message || "An unexpected error occurred.");
+      toast.error(
+        error.data?.error || error.message || "An unexpected error occurred."
+      );
       console.error(error);
     }
   };
 
   useEffect(() => {
-    import("quill").then((Quill) => {
-      if (!quilref.current && editorRef.current) {
-        quilref.current = new Quill.default(editorRef.current, {
+    let quillInstance;
+    const initializeQuill = async () => {
+      const Quill = await import("quill");
+      if (editorRef.current && !quilRef.current) {
+        quillInstance = new Quill.default(editorRef.current, {
           theme: "snow",
         });
+        quilRef.current = quillInstance;
       }
-    });
+    };
+
+    initializeQuill();
+
+    return () => {
+      if (quillInstance) {
+        quillInstance = null;
+      }
+    };
   }, []);
 
   return (
@@ -81,9 +106,10 @@ const AddBlogPage = () => {
           Upload Image
         </Label>
         <Input
-          onChange={(e) => setImage(e.target.files[0])}
+          onChange={(e) => setImage(e.target.files?.[0] || null)}
           id="image"
           type="file"
+          accept="image/*"
         />
       </div>
 
@@ -98,6 +124,7 @@ const AddBlogPage = () => {
           placeholder="Enter blog title"
           onChange={(e) => setTitle(e.target.value)}
           value={title}
+          required
         />
       </div>
 
@@ -108,6 +135,7 @@ const AddBlogPage = () => {
         </Label>
         <Input
           id="subtitle"
+          required
           type="text"
           placeholder="Enter blog subtitle"
           onChange={(e) => setSubTitle(e.target.value)}
@@ -126,6 +154,7 @@ const AddBlogPage = () => {
           id="category"
           value={category}
           className="w-full border border-gray-300 rounded-md px-3 py-2"
+          required
         >
           <option value="startup">Startup</option>
           <option value="tech">Tech</option>
@@ -137,22 +166,29 @@ const AddBlogPage = () => {
       {/* Blog Description (Quill Editor) */}
       <div className="space-y-2">
         <Label className="text-zinc-700 font-medium">Blog Description</Label>
-        <div className="relative border border-zinc-300 rounded-md h-72 overflow-hidden">
+        <div className="relative border border-zinc-300 rounded-md h-72 overflow-y-auto">
           <div ref={editorRef} className="h-full" />
+
           <Button
             type="button"
             onClick={generateContent}
+            disabled={isGenLoading}
             className="cursor-pointer absolute bottom-2 right-2 text-xs px-4 py-1.5 bg-zinc-800 text-white hover:bg-zinc-700 transition rounded"
           >
-            Generate with AI
+            {isGenLoading ? <LoaderSpinner /> : "Generate with AI"}
           </Button>
         </div>
       </div>
 
       {/* Submit Button */}
       <div>
-        <Button type="submit" className="cursor-pointer">
-          Submit
+        <Button
+          disabled={isLoading}
+          type="submit"
+          className="cursor-pointer"
+          aria-disabled={isLoading}
+        >
+          {isLoading ? <LoaderSpinner /> : "Add Blog"}
         </Button>
       </div>
     </form>
