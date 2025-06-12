@@ -1,11 +1,18 @@
-import React from 'react'
+"use client";
+import React, { useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 
-const page = () => {
-  return (
-    <div>
-      This is my page
-    </div>
-  )
-}
+const Page = () => {
+  const { user, isLoaded } = useUser();
 
-export default page
+  useEffect(() => {
+    if (isLoaded && user) {
+      console.log("Username:", user.username);
+      console.log("Email:", user.primaryEmailAddress?.emailAddress);
+    }
+  }, [isLoaded, user]);
+
+  return <div>This is my page</div>;
+};
+
+export default Page;
