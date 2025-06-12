@@ -1,6 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import ReduxProvider from "@/components/ReduxProvider";
+import { Toaster } from "react-hot-toast";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,7 +27,10 @@ export default function RootLayout({ children }) {
           suppressHydrationWarning={true}
           className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-slate-950`}
         >
-          {children}
+          <ReduxProvider>
+            <Toaster position="top-right" reverseOrder={false} />
+            {children}
+          </ReduxProvider>
         </body>
       </html>
     </ClerkProvider>

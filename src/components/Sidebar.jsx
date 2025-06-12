@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Calendar, Home, Inbox, Search, Settings,DiamondPlus ,ListCheck  } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -23,25 +23,25 @@ const items = [
     icon: Home,
   },
   {
-    title: "Inbox",
+    title: "Add Blog",
     url: "/dashboard/addblog",
-    icon: Inbox,
+    icon: DiamondPlus,
   },
   {
-    title: "Calendar",
-    url: "/dashboard/calendar",
-    icon: Calendar,
+    title: "My Blogs",
+    url: "/dashboard/myblog",
+    icon: ListCheck ,
   },
-  {
-    title: "Search",
-    url: "/dashboard/search",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
+  // {
+  //   title: "Search",
+  //   url: "/dashboard/search",
+  //   icon: Search,
+  // },
+  // {
+  //   title: "Settings",
+  //   url: "/dashboard/settings",
+  //   icon: Settings,
+  // },
 ];
 
 export function AppSidebar() {

@@ -46,16 +46,3 @@ export async function POST(request) {
     );
   }
 }
-
-// get blogs
-export async function GET() {
-  try {
-    const response = await BlogModel.find().sort({ createdAt: -1 });
-    return NextResponse.json({ success: true, response });
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
-  }
-}

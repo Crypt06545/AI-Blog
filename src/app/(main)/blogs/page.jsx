@@ -1,11 +1,16 @@
+'use client'
+import { useGetBlogsQuery } from '@/app/redux/api'
 import React from 'react'
 
-const page = () => {
+const BlogPage = () => {
+  const {isLoading,isError,isSuccess,data,error} = useGetBlogsQuery()
+  console.log(isLoading,isError,isSuccess,data,error);
+  
   return (
-    <div>
+    <div className='min-h-screen'>
       This is blog page
     </div>
   )
 }
 
-export default page
+export default BlogPage
