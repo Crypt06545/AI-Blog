@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import main from "@/lib/gemini";
 
 // connect to DB (optional if not used here)
-ConnectDB();
+// ConnectDB();
 
 export async function POST(request) {
   try {

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useAddBlogMutation, useGenAiContetnMutation } from "@/app/redux/api";
 import LoaderSpinner from "@/components/LoaderSpinner";
+import { useUser } from "@clerk/nextjs";
 
 const AddBlogPage = () => {
   const [addBlog, { isLoading }] = useAddBlogMutation();
@@ -15,8 +16,21 @@ const AddBlogPage = () => {
   const quilRef = useRef(null);
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
+  const [userName, setUserName] = useState("");
+  // const [email, setEmail] = useState("");
+  const [authorPhoto, setAuthorPhoto] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [category, setCategory] = useState("startup");
+  const { user, isLoaded } = useUser();
+
+  useEffect(() => {
+    if (isLoaded && user) {
+      // console.log(user?.fullName);
+      setUserName(user?.fullName);
+      // setEmail(user?.primaryEmailAddress?.emailAddress);
+      setAuthorPhoto(user?.imageUrl);
+    }
+  }, [isLoaded, user]);
 
   const generateContent = async () => {
     if (!title) return toast.error("Please Enter a title!");
@@ -49,8 +63,8 @@ const AddBlogPage = () => {
     formData.append("category", category);
     formData.append("description", description);
     if (image) formData.append("image", image);
-    formData.append("author", "mehadi");
-    formData.append("authorImg", "mehadi");
+    formData.append("author", userName);
+    formData.append("authorImg", authorPhoto);
 
     try {
       const result = await addBlog(formData).unwrap();

@@ -1,18 +1,22 @@
 "use client";
-import React, { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-
-const Page = () => {
+import React, { useEffect } from "react";
+const getUserDataByEmail = () => {
   const { user, isLoaded } = useUser();
-
   useEffect(() => {
     if (isLoaded && user) {
-      console.log("Username:", user.username);
-      console.log("Email:", user.primaryEmailAddress?.emailAddress);
+      // console.log(user?.fullName);
+
+      console.log(user?.primaryEmailAddress?.emailAddress);
     }
   }, [isLoaded, user]);
 
-  return <div>This is my page</div>;
+  return (
+    <div>
+      {/* {params.email} */}
+      this is blog
+    </div>
+  );
 };
 
-export default Page;
+export default getUserDataByEmail;
