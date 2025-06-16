@@ -17,7 +17,6 @@ const AddBlogPage = () => {
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [userName, setUserName] = useState("");
-  // const [email, setEmail] = useState("");
   const [authorPhoto, setAuthorPhoto] = useState("");
   const [subTitle, setSubTitle] = useState("");
   const [category, setCategory] = useState("startup");
@@ -25,9 +24,11 @@ const AddBlogPage = () => {
 
   useEffect(() => {
     if (isLoaded && user) {
-      // console.log(user?.fullName);
-      setUserName(user?.fullName);
       // setEmail(user?.primaryEmailAddress?.emailAddress);
+      // // console.log("User email:", user?.primaryEmailAddress?.emailAddress);
+      setUserName(user?.fullName);
+      // console.log(user);
+      
       setAuthorPhoto(user?.imageUrl);
     }
   }, [isLoaded, user]);
@@ -65,6 +66,7 @@ const AddBlogPage = () => {
     if (image) formData.append("image", image);
     formData.append("author", userName);
     formData.append("authorImg", authorPhoto);
+    // const userE = user?.primaryEmailAddress?.emailAddress
 
     try {
       const result = await addBlog(formData).unwrap();

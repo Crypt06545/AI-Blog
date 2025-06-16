@@ -18,6 +18,11 @@ export const blogsApi = createApi({
         body: formdata,
       }),
     }),
+    // get indivisual blog
+    getBlogsByAuthor: builder.query({
+      query: (author) => `myblog?author=${encodeURIComponent(author)}`,
+    }),
+
     //generate ai content
     genAiContetn: builder.mutation({
       query: (prompt) => ({
@@ -32,5 +37,9 @@ export const blogsApi = createApi({
   }),
 });
 
-export const { useGetBlogsQuery, useAddBlogMutation, useGenAiContetnMutation } =
-  blogsApi;
+export const {
+  useGetBlogsQuery,
+  useAddBlogMutation,
+  useGenAiContetnMutation,
+  useGetBlogsByAuthorQuery,
+} = blogsApi;
