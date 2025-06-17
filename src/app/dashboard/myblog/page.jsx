@@ -18,10 +18,11 @@ import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 import { format } from "date-fns";
 import Loader from "@/components/Loader";
+import { useRouter } from "next/navigation";
 
 export default function MyBlogPage() {
   const { user, isLoaded } = useUser();
-
+  const router = useRouter();
   const {
     data: blogs,
     isLoading,
@@ -68,12 +69,14 @@ export default function MyBlogPage() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleUpdate(row.original)}
+              className="cursor-pointer"
+              onClick={() => handleUpdate(row.original._id)}
             >
               Update
             </Button>
             <Button
               size="sm"
+              className="cursor-pointer"
               variant="destructive"
               onClick={() => handleDelete(row.original._id)}
             >
@@ -92,9 +95,9 @@ export default function MyBlogPage() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleUpdate = (blog) => {
-    console.log("Update blog:", blog);
-    // Implement update logic
+  const handleUpdate = (id) => {
+    // console.log("Update blog:", id);
+    router.push(`/dashboard/update?id=${id}`);
   };
 
   const handleDelete = (id) => {
