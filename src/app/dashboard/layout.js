@@ -14,7 +14,7 @@ const DashboardLayout = ({ children }) => {
           <SidebarProvider>
             <AppSidebar />
             <main className="w-full">
-              <SidebarTrigger />
+              <SidebarTrigger className='' />
               <div className="p-10">{children}</div>
             </main>
           </SidebarProvider>

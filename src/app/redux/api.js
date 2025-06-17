@@ -19,7 +19,7 @@ export const blogsApi = createApi({
         method: "POST",
         body: formdata,
       }),
-      invalidatesTags: [{ type: "Blogs", id: "LIST" }], // Optional: invalidate on add
+      invalidatesTags: [{ type: "Blogs", id: "LIST" }],
     }),
     getBlogsByAuthor: builder.query({
       query: (author) => `myblog?author=${encodeURIComponent(author)}`,

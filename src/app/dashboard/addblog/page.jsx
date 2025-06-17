@@ -18,7 +18,6 @@ const AddBlogPage = () => {
   const [title, setTitle] = useState("");
   const [userName, setUserName] = useState("");
   const [authorPhoto, setAuthorPhoto] = useState("");
-  const [subTitle, setSubTitle] = useState("");
   const [category, setCategory] = useState("startup");
   const { user, isLoaded } = useUser();
 
@@ -28,7 +27,7 @@ const AddBlogPage = () => {
       // // console.log("User email:", user?.primaryEmailAddress?.emailAddress);
       setUserName(user?.fullName);
       // console.log(user);
-      
+
       setAuthorPhoto(user?.imageUrl);
     }
   }, [isLoaded, user]);
@@ -60,7 +59,6 @@ const AddBlogPage = () => {
     const description = quilRef.current.root.innerHTML;
     const formData = new FormData();
     formData.append("title", title);
-    formData.append("subTitle", subTitle);
     formData.append("category", category);
     formData.append("description", description);
     if (image) formData.append("image", image);
@@ -75,7 +73,6 @@ const AddBlogPage = () => {
         toast.success("Blog created successfully!");
         // Reset form
         setTitle("");
-        setSubTitle("");
         setImage(false);
         setCategory("startup");
         if (quilRef.current) {
@@ -144,20 +141,6 @@ const AddBlogPage = () => {
         />
       </div>
 
-      {/* Blog Sub Title */}
-      <div className="space-y-2">
-        <Label htmlFor="subtitle" className="text-zinc-700 font-medium">
-          Sub Title
-        </Label>
-        <Input
-          id="subtitle"
-          required
-          type="text"
-          placeholder="Enter blog subtitle"
-          onChange={(e) => setSubTitle(e.target.value)}
-          value={subTitle}
-        />
-      </div>
 
       {/* Blog Category */}
       <div className="space-y-2">
@@ -174,8 +157,8 @@ const AddBlogPage = () => {
         >
           <option value="startup">Startup</option>
           <option value="tech">Tech</option>
-          <option value="growth">Growth</option>
-          <option value="design">Design</option>
+          <option value="life">Life</option>
+          <option value="finance">Finance</option>
         </select>
       </div>
 

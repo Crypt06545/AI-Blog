@@ -1,7 +1,13 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { blog_data } from "@/app/assets/assets";
+'use client';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import BlogCard from "./BlogCard";
+import { useGetBlogsQuery } from "@/app/redux/api";
+import { useState } from "react";
+
 const BlogList = () => {
+  const { isLoading, isError, isSuccess, data } = useGetBlogsQuery();
+  const [selectedCategory, setSelectedCategory] = useState("account");
+
   const blogCategory = [
     { path: "account", name: "All" },
     { path: "password", name: "Tech" },
@@ -10,10 +16,24 @@ const BlogList = () => {
     { path: "finance", name: "Finance" },
   ];
 
+  // Filter the blogs based on selected category
+  const filteredBlogs = isSuccess
+    ? data.response.filter((blog) => {
+        if (selectedCategory === "account") return true; // All
+        return blog.category?.toLowerCase() === selectedCategory;
+      })
+    : [];
+
   return (
-    <div className="min-h-[89vh] w-[] bg-gray-900">
+    <div className="min-h-[89vh] bg-gray-900">
+      {/* Tabs Section */}
       <div className="flex justify-center items-center p-2 sm:p-4">
-        <Tabs defaultValue="account" className="w-full overflow-x-auto">
+        <Tabs
+          defaultValue="account"
+          value={selectedCategory}
+          onValueChange={(val) => setSelectedCategory(val)}
+          className="w-full overflow-x-auto"
+        >
           <TabsList className="bg-gray-800 border border-gray-700 rounded-full flex gap-1 p-1 w-max mx-auto">
             {blogCategory.map((category) => (
               <TabsTrigger
@@ -32,20 +52,30 @@ const BlogList = () => {
           </TabsList>
         </Tabs>
       </div>
+
+      {/* Blog Cards Section */}
       <div className="w-full mt-4 px-6 md:px-16 lg:px-24 xl:px-32 grid md:grid-cols-4 gap-5">
-        {blog_data.map((item, index) => {
-          // console.log(item);
-          return (
+        {isLoading && <p className="text-white">Loading...</p>}
+        {isError && <p className="text-red-500">Failed to load blogs.</p>}
+        {filteredBlogs.length > 0 ? (
+          filteredBlogs.map((item) => (
             <BlogCard
-              key={index}
+              key={item._id}
               image={item.image}
               title={item.title}
-              id={item.id}
-              description={item.description}
-              category={item.category}
+              id={item._id}
+              description={item.description.replace(/<[^>]+>/g, "")}
+              category={item.category || "General"}
             />
-          );
-        })}
+          ))
+        ) : (
+          !isLoading &&
+          isSuccess && (
+            <p className="text-white col-span-full text-center">
+              No blogs found for this category.
+            </p>
+          )
+        )}
       </div>
     </div>
   );
