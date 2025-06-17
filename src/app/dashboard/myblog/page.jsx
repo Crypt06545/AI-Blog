@@ -1,6 +1,9 @@
 "use client";
 import { useUser } from "@clerk/nextjs";
-import { useGetBlogsByAuthorQuery } from "@/app/redux/api";
+import {
+  useDeleteBlogMutation,
+  useGetBlogsByAuthorQuery,
+} from "@/app/redux/api";
 import {
   getCoreRowModel,
   useReactTable,
@@ -19,9 +22,12 @@ import { useMemo } from "react";
 import { format } from "date-fns";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import toast from "react-hot-toast";
 
 export default function MyBlogPage() {
   const { user, isLoaded } = useUser();
+  const [deleteBlog] = useDeleteBlogMutation();
   const router = useRouter();
   const {
     data: blogs,
@@ -100,13 +106,39 @@ export default function MyBlogPage() {
     router.push(`/dashboard/update?id=${id}`);
   };
 
-  const handleDelete = (id) => {
-    console.log("Delete blog ID:", id);
-    // Implement delete logic
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await deleteBlog(id).unwrap();
+
+          if (res.success) {
+            // router.push("/dashboard");
+            toast.success("Deleted!", "Your blog has been deleted.", "success");
+          } else {
+            toast.error("Error!", res.message || "Delete failed", "error");
+          }
+        } catch (error) {
+          toast.error(
+            "Error!",
+            error?.data?.message || "Something went wrong",
+            "error"
+          );
+        }
+      }
+    });
   };
 
   if (isLoading) return <Loader />;
-  if (error) return <div className="text-red-600">Error fetching blogs.</div>;
+  if (error) return <div className="text-red-600">No Blogs Found</div>;
 
   return (
     <div className="p-6">
