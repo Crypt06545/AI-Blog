@@ -27,6 +27,14 @@ export const blogsApi = createApi({
     getBlogsByAuthor: builder.query({
       query: (author) => `myblog?author=${encodeURIComponent(author)}`,
     }),
+    // update a blog
+    updateBlog: builder.mutation({
+      query: ({ id, formdata }) => ({
+        url: `update?id=${id}`,
+        method: "PUT",
+        body: formdata,
+      }),
+    }),
 
     //generate ai content
     genAiContetn: builder.mutation({
@@ -48,4 +56,5 @@ export const {
   useGenAiContetnMutation,
   useGetBlogsByAuthorQuery,
   useGetBlogByIdQuery,
+  useUpdateBlogMutation,
 } = blogsApi;

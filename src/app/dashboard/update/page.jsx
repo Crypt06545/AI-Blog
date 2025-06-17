@@ -1,121 +1,194 @@
 "use client";
-import { useGetBlogByIdQuery } from "@/app/redux/api";
-import { useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
-import Loader from "@/components/Loader";
+
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import "quill/dist/quill.snow.css";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import toast from "react-hot-toast";
+
+import {
+  useGetBlogByIdQuery,
+  useUpdateBlogMutation,
+  useGenAiContetnMutation,
+} from "@/app/redux/api";
+import LoaderSpinner from "@/components/LoaderSpinner";
 
 const UpdateBlog = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  const {
-    data: blog,
-    isLoading,
-    isError,
-  } = useGetBlogByIdQuery(id, {
+  const { data: blog, isLoading: isBlogFetching } = useGetBlogByIdQuery(id, {
     skip: !id,
   });
+  // console.log(blog);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    image: "",
-    description: "",
-  });
+  const [updateBlog, { isLoading: isUpdating }] = useUpdateBlogMutation();
+  const [genAiContent, { isLoading: isGenLoading }] = useGenAiContetnMutation();
 
+  const editorRef = useRef(null);
+  const quilRef = useRef(null);
+
+  // Controlled inputs
+  const [title, setTitle] = useState("");
+  const router = useRouter();
+  const [category, setCategory] = useState("startup");
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // Fetch blog content and set default field values
   useEffect(() => {
     if (blog) {
-      setFormData({
-        title: blog.title || "",
-        image: blog.image || "",
-        description: blog.description || "",
-      });
+      setTitle(blog.title || "");
+      setCategory(blog.category || "startup");
+      setImagePreview(blog.image || "");
     }
   }, [blog]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Set default Quill content
+  useEffect(() => {
+    if (quilRef.current && blog?.description) {
+      quilRef.current.root.innerHTML = blog.description;
+    }
+  }, [blog]);
+
+  // Initialize Quill
+  useEffect(() => {
+    const initializeQuill = async () => {
+      const Quill = await import("quill");
+      if (editorRef.current && !quilRef.current) {
+        quilRef.current = new Quill.default(editorRef.current, {
+          theme: "snow",
+        });
+      }
+    };
+    initializeQuill();
+  }, []);
+
+  const generateContent = async () => {
+    if (!title) return toast.error("Please enter a title!");
+
+    try {
+      const res = await genAiContent(title).unwrap();
+      if (res?.success && res?.content) {
+        if (quilRef.current) {
+          quilRef.current.root.innerHTML = res.content;
+        }
+        toast.success("AI content generated!");
+      } else {
+        toast.error("Failed to generate content.");
+      }
+    } catch (error) {
+      toast.error(error?.data?.error || "Failed to generate content.");
+    }
   };
 
-  const handleSubmit = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
-    console.log("Updated blog data:", formData);
-    // Add your update logic here (mutation)
-  };
+    if (!quilRef.current) return;
 
-  if (isLoading) return <Loader />;
-  if (isError) return <div className="text-red-600">Error loading blog</div>;
-  if (!blog) return <div className="text-red-600">Blog not found</div>;
+    const description = quilRef.current.root.innerHTML;
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("category", category);
+    formData.append("description", description);
+
+    try {
+      const res = await updateBlog({ id, formdata: formData }).unwrap();
+      if (res?.success) {
+        toast.success("Blog Updated SuccessFully");
+        router.push("/");
+      }
+    } catch (error) {
+      toast.error(error.message || "Falied To Update!");
+    }
+
+    //  console.log(fr);
+  };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Update Blog: {blog.title}</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title Field */}
-        <div>
-          <Label htmlFor="title">Title</Label>
-          <Input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter blog title"
+    <form
+      onSubmit={onSubmitHandler}
+      className="max-w-3xl mx-auto px-4 py-8 space-y-6"
+    >
+      {/* Image Upload */}
+      <div className="space-y-2">
+        <Label htmlFor="image">Upload Image</Label>
+        <Input
+          id="image"
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setImage(file);
+              setImagePreview(URL.createObjectURL(file));
+            }
+          }}
+        />
+        {imagePreview && (
+          <img
+            src={imagePreview}
+            alt="Preview"
+            className="mt-2 w-full max-w-xs rounded border"
           />
-        </div>
+        )}
+      </div>
 
-        {/* Image Field */}
-        <div>
-          <Label htmlFor="image">Image URL</Label>
-          <Input
-            type="text"
-            id="image"
-            name="image"
-            value={formData.image}
-            onChange={handleChange}
-            placeholder="Enter image URL"
-          />
-          {formData.image && (
-            <img
-              src={formData.image}
-              alt="Blog"
-              className="mt-2 h-40 rounded object-cover"
-            />
-          )}
-        </div>
+      {/* Title */}
+      <div className="space-y-2">
+        <Label htmlFor="title">Blog Title</Label>
+        <Input
+          id="title"
+          type="text"
+          placeholder="Enter blog title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+      </div>
+      {/* Category */}
+      <div className="space-y-2">
+        <Label htmlFor="category">Category</Label>
+        <select
+          id="category"
+          className="w-full border px-3 py-2 rounded-md"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          required
+        >
+          <option value="startup">Startup</option>
+          <option value="tech">Tech</option>
+          <option value="growth">Growth</option>
+          <option value="design">Design</option>
+        </select>
+      </div>
 
-        {/* Description Field */}
-        <div>
-          <Label htmlFor="description">Description (HTML)</Label>
-          <Textarea
-            id="description"
-            name="description"
-            rows="10"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Enter HTML content"
-          />
-          <div className="mt-2 p-4 border rounded bg-gray-50">
-            <p className="text-sm font-medium mb-1 text-gray-600">Preview:</p>
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{ __html: formData.description }}
-            />
-          </div>
+      {/* Quill Editor */}
+      <div className="space-y-2">
+        <Label>Blog Description</Label>
+        <div className="relative border rounded-md h-72 overflow-y-auto">
+          <div ref={editorRef} className="h-full" />
+          <Button
+            type="button"
+            onClick={generateContent}
+            disabled={isGenLoading}
+            className="absolute bottom-2 right-2 text-xs px-4 py-1.5 bg-zinc-800 text-white hover:bg-zinc-700 transition rounded"
+          >
+            {isGenLoading ? <LoaderSpinner /> : "Generate with AI"}
+          </Button>
         </div>
+      </div>
 
-        <Button type="submit" className="w-full">
-          Save Changes
+      {/* Submit */}
+      <div>
+        <Button type="submit" disabled={isUpdating}>
+          {isUpdating ? <LoaderSpinner /> : "Update Blog"}
         </Button>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 };
 
