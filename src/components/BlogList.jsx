@@ -1,8 +1,9 @@
-'use client';
+"use client";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import BlogCard from "./BlogCard";
 import { useGetBlogsQuery } from "@/app/redux/api";
 import { useState } from "react";
+import Loader from "@/components/Loader";
 
 const BlogList = () => {
   const { isLoading, isError, isSuccess, data } = useGetBlogsQuery();
@@ -10,16 +11,16 @@ const BlogList = () => {
 
   const blogCategory = [
     { path: "account", name: "All" },
-    { path: "password", name: "Tech" },
+    { path: "tech", name: "Tech" },
     { path: "startup", name: "Startup" },
-    { path: "lifestyle", name: "Life" },
+    { path: "life", name: "Life" },
     { path: "finance", name: "Finance" },
   ];
 
   // Filter the blogs based on selected category
   const filteredBlogs = isSuccess
     ? data.response.filter((blog) => {
-        if (selectedCategory === "account") return true; // All
+        if (selectedCategory === "account") return true; 
         return blog.category?.toLowerCase() === selectedCategory;
       })
     : [];
@@ -54,27 +55,30 @@ const BlogList = () => {
       </div>
 
       {/* Blog Cards Section */}
-      <div className="w-full mt-4 px-6 md:px-16 lg:px-24 xl:px-32 grid md:grid-cols-4 gap-5">
-        {isLoading && <p className="text-white">Loading...</p>}
-        {isError && <p className="text-red-500">Failed to load blogs.</p>}
-        {filteredBlogs.length > 0 ? (
-          filteredBlogs.map((item) => (
-            <BlogCard
-              key={item._id}
-              image={item.image}
-              title={item.title}
-              id={item._id}
-              description={item.description.replace(/<[^>]+>/g, "")}
-              category={item.category || "General"}
-            />
-          ))
+      <div className="w-full mt-4 px-6 md:px-16 lg:px-24 xl:px-32">
+        {isLoading ? (
+          <div className="flex justify-center items-center min-h-[40vh]">
+            <Loader />
+          </div>
+        ) : isError ? (
+          <p className="text-red-500 text-center">Failed to load blogs.</p>
+        ) : filteredBlogs.length > 0 ? (
+          <div className="grid md:grid-cols-4 gap-5">
+            {filteredBlogs.map((item) => (
+              <BlogCard
+                key={item._id}
+                image={item.image}
+                title={item.title}
+                id={item._id}
+                description={item.description.replace(/<[^>]+>/g, "")}
+                category={item.category || "General"}
+              />
+            ))}
+          </div>
         ) : (
-          !isLoading &&
-          isSuccess && (
-            <p className="text-white col-span-full text-center">
-              No blogs found for this category.
-            </p>
-          )
+          <p className="text-white text-center">
+            No blogs found for this category.
+          </p>
         )}
       </div>
     </div>

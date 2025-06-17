@@ -33,6 +33,7 @@ export async function POST(request) {
       image: uploadRes.secure_url,
       author: formData.get("author"),
       authorImg: formData.get("authorImg"),
+      category: formData.get("category"),
     };
 
     const response = await BlogModel.create(blogData);
