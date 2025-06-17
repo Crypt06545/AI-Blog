@@ -7,28 +7,21 @@ export async function GET(request) {
     await ConnectDB();
 
     const { searchParams } = new URL(request.url);
-    const author = searchParams.get("author");
+    const id = searchParams.get("id");
 
-    if (!author) {
-      return NextResponse.json(
-        { message: "Author is required" },
-        { status: 400 }
-      );
+    if (!id) {
+      return NextResponse.json({ message: "Missing ID" }, { status: 400 });
     }
 
-    // Find blogs by author name
-    const blogs = await BlogModel.find({ author });
+    const blog = await BlogModel.findById(id);
 
-    if (!blogs || blogs.length === 0) {
-      return NextResponse.json(
-        { message: "No blogs found for this author" },
-        { status: 404 }
-      );
+    if (!blog) {
+      return NextResponse.json({ message: "Blog not found" }, { status: 404 });
     }
 
-    return NextResponse.json(blogs);
+    return NextResponse.json(blog);
   } catch (error) {
-    console.error("Error fetching blogs:", error);
+    console.error("Error fetching blog:", error);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }

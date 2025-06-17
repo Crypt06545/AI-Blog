@@ -10,6 +10,11 @@ export const blogsApi = createApi({
     getBlogs: builder.query({
       query: () => "blog",
     }),
+    // getBlogs by id
+    getBlogById: builder.query({
+      query: (id) => `update?id=${id}`,
+    }),
+
     // post blog
     addBlog: builder.mutation({
       query: (formdata) => ({
@@ -42,4 +47,5 @@ export const {
   useAddBlogMutation,
   useGenAiContetnMutation,
   useGetBlogsByAuthorQuery,
+  useGetBlogByIdQuery,
 } = blogsApi;
