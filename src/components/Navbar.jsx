@@ -116,13 +116,20 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
-          <Button
-            variant="outline"
-            className="mt-4 w-full flex items-center justify-center gap-2 bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:text-white transition-colors"
-          >
-            <User className="h-5 w-5" />
-            Account
-          </Button>
+
+          {user ? (
+            // <UserButton className="mt-4 w-full" />
+            ''
+          ) : (
+            <Button
+              onClick={() => openSignIn()}
+              variant="outline"
+              className="mt-4 w-full flex items-center justify-center gap-2 bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:text-white transition-colors"
+            >
+              <User className="h-5 w-5" />
+              Account
+            </Button>
+          )}
         </div>
       )}
     </nav>
