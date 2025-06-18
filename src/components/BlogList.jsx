@@ -4,6 +4,8 @@ import BlogCard from "./BlogCard";
 import { useGetBlogsQuery } from "@/app/redux/api";
 import { useState } from "react";
 import Loader from "@/components/Loader";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 const BlogList = () => {
   const { isLoading, isError, isSuccess, data } = useGetBlogsQuery();
@@ -19,10 +21,12 @@ const BlogList = () => {
 
   // Filter the blogs based on selected category
   const filteredBlogs = isSuccess
-    ? data.response.filter((blog) => {
-        if (selectedCategory === "account") return true; 
-        return blog.category?.toLowerCase() === selectedCategory;
-      })
+    ? data.response
+        .filter((blog) => {
+          if (selectedCategory === "account") return true;
+          return blog.category?.toLowerCase() === selectedCategory;
+        })
+        .slice(0, 4)
     : [];
 
   return (
@@ -80,6 +84,14 @@ const BlogList = () => {
             No blogs found for this category.
           </p>
         )}
+      </div>
+      <div className="flex justify-center items-center mt-10">
+        <Button
+          variant="outline"
+          className="mt-4 text-white cursor-pointer bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:text-white transition-colors"
+        >
+           <Link href={`/blogs`}>Show All</Link>
+        </Button>
       </div>
     </div>
   );
