@@ -62,7 +62,7 @@ const Hero = () => {
           </p>
         </div>
         <div className="info-sec-button flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-          <Link href={"/blog"}>
+          <Link href={"/blogs"}>
             <Button className="cursor-pointer bg-blue-400 hover:bg-blue-500 text-white w-40 h-11 rounded-full text-sm transition-all duration-200">
               Explore Blog
             </Button>
