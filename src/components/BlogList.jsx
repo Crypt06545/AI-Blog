@@ -30,7 +30,7 @@ const BlogList = () => {
     : [];
 
   return (
-    <div className="min-h-[89vh] bg-gray-900">
+    <div className="min-h-screen bg-gray-900">
       {/* Tabs Section */}
       <div className="flex justify-center items-center p-2 sm:p-4">
         <Tabs
