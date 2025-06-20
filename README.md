@@ -46,6 +46,11 @@ The **AI Blog Generator** is a full-stack web application that allows users to g
 
 ---
 
+### 🖼 Cloudinary Integration
+
+- Upload and manage blog images using **Cloudinary**
+- Optimized image storage and fast delivery via CDN
+
 ## 🛠️ Technologies Used
 
 ### Frontend / Full Stack
@@ -85,9 +90,12 @@ npm install
 ```
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your-clerk-publishable-key
 CLERK_SECRET_KEY=your-clerk-secret-key
-MONGODB_URI=your-mongodb-uri
-NEXT_PUBLIC_GEMINI_API_KEY=your-gemini-api-key
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000
+MONGO_URL=your-mongodb-connection-uri
+NEXT_GEMINI_API_KEY=your-gemini-api-key
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_SECRET_KEY=your-cloudinary-secret-key
 ```
 
 #### 3. Run the development server
